@@ -1,4 +1,10 @@
 # hstxcn-backend
-hstxcn backend codes, python3 on tornado.
-Database: MySQL, Redis
-Please rewrite "database_settings" in settings.py.
+## Requirements
+* Python3.5
+* MySQL
+* Redis
+
+## Usage
+`pip install -r requirement`  
+`python3 main.py <port>`
+
