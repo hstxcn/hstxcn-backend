@@ -70,10 +70,11 @@ class ImageUploadHandler(base.APIBaseHandler):
             temp.write(meta['body'])
         image_name = metas[0]['filename']
         temp.seek(0)
+        hash_value = hashlib.md5(temp.read()).hexdigest()
         self.add_watermark(temp)
 
         return {
-            'name': str(uuid.uuid4().hex) + image_name,
+            'name': {},
             'file': temp
         }
 

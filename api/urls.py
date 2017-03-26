@@ -34,7 +34,8 @@ urls = [
     (r"/profile", "user.ProfileHandler"),
     (r"/user", "user.ProfileHandler"),
     (r"/activate", "user.ActivateHandler"),
-    (r"/user/(?P<uuid>[0-9a-fA-F]{32})/confirmation/(?P<token>)", "user.ConfirmationHandler"),
+    (r"/user/(?P<uuid>[0-9a-fA-F]{32})/confirmation/(?P<token>.*)", "user.ConfirmationHandler"),
+    (r"/user/(?P<uuid>[0-9a-fA-F]{32})/confirmation", "user.ResendConfirmationHandler"),
     (r"/users", "user.UserQueryHandler"),
 ]
 

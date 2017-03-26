@@ -28,7 +28,7 @@ class CollectionHandler(base.APIBaseHandler):
                                'check_func': self.check_like,
                            })
 
-    def check_like(self, collection, ip):
+    def check_like(self, collection):
         return self.redis_cli.sismember(collection.id.hex, self.request.remote_ip)
 
 
@@ -49,8 +49,8 @@ class CollectionsHandler(base.APIBaseHandler):
                             query=query,
                             check_func=self.check_like)
 
-    def check_like(self, collection, ip):
-        return self.redis_cli.sismember(collection.id.hex, ip)
+    def check_like(self, collection):
+        return self.redis_cli.sismember(collection.id.hex, self.request.remote_ip)
 
 
 class CollectionLikeHandler(base.APIBaseHandler):

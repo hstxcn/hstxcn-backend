@@ -25,8 +25,8 @@ def objects_get(query, msg):
 def object_get(query, msg):
     def _object_get(form, field):
         try:
-            # if not field.data:
-            #     return None
+            if not field.data:
+                return None
             target = query.get(field.data)
             assert target is not None
             field.data = target

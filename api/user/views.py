@@ -32,7 +32,46 @@ __all__ = [
 ]
 
 
-class RegisterHandler(base.APIBaseHandler):
+class MailMixin():
+    @gen.coroutine
+    def send_confirm_mail(self, user):
+        s = SMTPAsync()
+        yield s.connect(mail_settings['host'], mail_settings['port'])
+        yield s.starttls()
+        yield s.login(mail_settings['email'], mail_settings['password'])
+
+        me = mail_settings['email']
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "【友拍平台】摄影师注册确认"
+        msg['From'] = me
+        msg['To'] = user.email
+        confirm_url = "http://{host}/user/{uid}/confirmation/{token}"\
+                      .format(host=self.request.host,
+                              uid=user.id.hex,
+                              token=self.generate_confirmation_token(user).decode())
+        text = """
+                <html>
+                  <body>
+                    尊敬的摄影师您好，恭喜您注册友拍成功，请<a href="{}">点击链接</a>
+                    验证您的邮箱，并完善您的信息，您可以上传至少两套照片以便于我们审核。审核的结果会以邮件形式通知您。<br/>
+                    感激您对友拍的信任。要约拍，来友拍。
+                  </body>
+                </html>
+               """\
+               .format(confirm_url)
+        content = MIMEText(text, "html")
+        msg.attach(content)
+
+        yield s.sendmail(me, user.email, msg.as_string())
+        yield s.quit()
+
+    def generate_confirmation_token(self, user, expiration=86400):
+        s = Serializer(self.application.settings['cookie_secret'], expiration)
+
+        return s.dumps({'confirm': user.id.hex})
+
+
+class RegisterHandler(base.APIBaseHandler, MailMixin):
     """
     URL: /register
     Allowed methods: POST
@@ -87,56 +126,21 @@ class RegisterHandler(base.APIBaseHandler):
 
         return collection
 
-    @gen.coroutine
-    def send_confirm_mail(self, user):
-        s = SMTPAsync()
-        yield s.connect(mail_settings['host'], mail_settings['port'])
-        yield s.starttls()
-        yield s.login(mail_settings['email'], mail_settings['password'])
-
-        me = mail_settings['email']
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = "【友拍平台】摄影师注册确认"
-        msg['From'] = me
-        msg['To'] = user.email
-        confirm_url = "http://{host}/user/{uid}/confirmation/{token}"\
-                      .format(host=self.request.host,
-                              uid=user.id.hex,
-                              token=self.generate_confirmation_token(user).decode())
-        text = """
-                <html>
-                  <body>
-                    尊敬的摄影师您好，恭喜您注册友拍成功，请<a href="{}">点击链接</a>
-                    验证您的邮箱，并完善您的信息，您可以上传至少两套照片以便于我们审核。审核的结果会以邮件形式通知您。<br/>
-                    感激您对友拍的信任。要约拍，来友拍。
-                  </body>
-                </html>
-               """\
-               .format(confirm_url)
-        content = MIMEText(text, "html")
-        msg.attach(content)
-
-        yield s.sendmail(me, user.email, msg.as_string())
-        yield s.quit()
-
-    def generate_confirmation_token(self, user, expiration=86400):
-        s = Serializer(self.application.settings['cookie_secret'], expiration)
-
-        return s.dumps({'confirm': user.id.hex})
-
 
 class ConfirmationHandler(base.APIBaseHandler):
     """
-    URL: /user/(?P<uuid>[0-9a-fA-F]{32})/confirmation/(?P<token>)
+    URL: /user/(?P<uuid>[0-9a-fA-F]{32})/confirmation/(?P<token>.*)
     Allowed methods: POST
     """
     @base.authenticated(status=("unconfirmed",))
     def post(self, uuid, token):
-        user = self.get_or_404(models.User,
+        user = self.get_or_404(models.User.query,
                                uuid)
         if not self.confirm(user, token):
             self.set_status(403)
-        self.finish()
+        self.finish(json.dumps(
+            user.format_detail()
+        ))
 
     @base.db_success_or_500
     def confirm(self, user, token):
@@ -150,6 +154,19 @@ class ConfirmationHandler(base.APIBaseHandler):
         user.status = "confirmed"
 
         return True
+
+
+class ResendConfirmationHandler(base.APIBaseHandler, MailMixin):
+    """
+    URL: /user/(?P<uuid>[0-9a-fA-F]{32})/confirmation
+    Allowed methods: POST
+    """
+    @base.authenticated(status=("unconfirmed",))
+    def post(self, uuid):
+        user = self.get_or_404(models.User.query,
+                               uuid)
+        yield self.send_confirm_mail(user)
+        self.finish()
 
 
 class LoginHandler(base.APIBaseHandler):
