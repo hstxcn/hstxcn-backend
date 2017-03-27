@@ -38,8 +38,8 @@ def object_get(query, msg):
 def object_filter_get(query, msg, **kwargs):
     def _object_filter_get(form, field):
         try:
-            # if not field.data:
-            #     return None
+            if not field.data:
+                return None
             target = query.filter_by(id=field.data, **kwargs).first()
             assert target is not None
             field.data = target
