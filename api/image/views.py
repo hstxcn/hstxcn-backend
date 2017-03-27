@@ -71,10 +71,14 @@ class ImageUploadHandler(base.APIBaseHandler):
         image_name = metas[0]['filename']
         temp.seek(0)
         hash_value = hashlib.md5(temp.read()).hexdigest()
+        temp.seek(0)
         self.add_watermark(temp)
 
         return {
-            'name': {},
+            'name': "{}.{}".format(
+                hash_value,
+                image_name.split('.')[-1]
+            ),
             'file': temp
         }
 

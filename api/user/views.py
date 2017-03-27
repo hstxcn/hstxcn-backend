@@ -29,6 +29,7 @@ __all__ = [
     "ActivateHandler",
     "UserQueryHandler",
     "ConfirmationHandler",
+    "ResendConfirmationHandler"
 ]
 
 
