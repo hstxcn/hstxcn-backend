@@ -136,7 +136,6 @@ class LoginForm(Form):
     """
     email = StringField('email', [
         InputRequired(),
-        Length(max=20),
     ])
     password = StringField('password', [
         InputRequired(),
