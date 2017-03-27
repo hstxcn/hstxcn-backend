@@ -69,10 +69,6 @@ class ProfileForm(Form):
         baseValidators.image_get,
         Optional(),
     ])
-    email = StringField('email', [
-        Email(),
-        Optional(),
-    ])
     sex = BooleanField('sex', false_values={False, 'false', 0})
     description = TextAreaField('description')
     major = StringField('major')
@@ -90,19 +86,6 @@ class ProfileForm(Form):
         if not current_user.check_password(field.data):
             _ = field.gettext
             raise StopValidation(_("密码错误."))
-
-    def validate_email(form, field):
-        if not field.data:
-            return
-        if baseValidators.ignore_match('email_ignore', form, field):
-            return
-
-        _ = field.gettext
-        count = models.User.query\
-            .filter(models.User.email == field.data)\
-            .count()
-        if count != 0:
-            raise ValidationError(_('邮箱已被使用.'))
 
     def validate_tags(form, field):
         current_user = form.kwargs.get("current_user", None)

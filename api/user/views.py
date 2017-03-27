@@ -211,8 +211,7 @@ class ProfileHandler(base.APIBaseHandler):
         """
         form = forms.ProfileForm(self.json_args,
                                  locale_code=self.locale.code,
-                                 current_user=self.current_user,
-                                 email_ignore=self.current_user.email)
+                                 current_user=self.current_user)
         if form.validate():
             self.edit_profile(form)
 
@@ -230,7 +229,7 @@ class ProfileHandler(base.APIBaseHandler):
 
     @base.db_success_or_500
     def edit_profile(self, form):
-        attr_list = ['name', 'email', 'sex', 'description',
+        attr_list = ['name', 'sex', 'description',
                      'major', 'imagelink']
         self.apply_edit(self.current_user, form, attr_list)
 
