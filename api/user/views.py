@@ -133,7 +133,6 @@ class ConfirmationHandler(base.APIBaseHandler):
     URL: /user/(?P<uuid>[0-9a-fA-F]{32})/confirmation/(?P<token>.*)
     Allowed methods: POST
     """
-    @base.authenticated(status=("unconfirmed",))
     def post(self, uuid, token):
         user = self.get_or_404(models.User.query,
                                uuid)
