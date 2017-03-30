@@ -150,6 +150,7 @@ class UserCollectionHandler(base.APIBaseHandler):
 
         return collection
 
+    @base.db_success_or_500
     def delete_collection(self, collection):
         self.session.delete(collection)
 
@@ -233,6 +234,7 @@ class UserCollectionWorkHandler(base.APIBaseHandler):
     @base.db_success_or_500
     def delete_work(self, work, collection):
         collection.images.remove(work)
+        self.session.flush()
 
 
 class UserCollectionWorksHandler(base.APIBaseHandler):
@@ -259,6 +261,7 @@ class UserCollectionWorksHandler(base.APIBaseHandler):
     def create_collection_work(self, collection, form):
         work = form.work.data
         collection.works.append(work)
+        self.session.flush()
 
         return work
 
