@@ -12,6 +12,7 @@ from tornado.httpclient import (
     AsyncHTTPClient,
     HTTPError,
 )
+from pymysql.err import IntegrityError
 
 from PIL import (
     Image,
@@ -44,8 +45,10 @@ class ImageUploadHandler(base.APIBaseHandler):
         yield self.upload_image(comp_file, author)
         yield self.upload_image(crop_file, author)
         yield self.upload_image(file, author)
-
-        image = self.create_image(file['name'])
+        try:
+            image = self.create_image(file['name'])
+        except IntegrityError:
+            image = models.Image.query.filter_by(filename=file['name']).first()
         self.set_status(201)
         self.finish(
             json.dumps(
@@ -149,8 +152,7 @@ class ImageUploadHandler(base.APIBaseHandler):
 
     def add_watermark(self, file):
         img = Image.open(file.name)
-        # text = "©youpai/{}".format(self.current_user.name)
-        text = "youpai"
+        text = "©youpai/{}".format(self.current_user.name)
         rgba_img = img.convert('RGBA')
         font = ImageFont.truetype(self.application.settings['image_font'], 32)
 
