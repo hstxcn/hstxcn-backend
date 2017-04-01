@@ -260,7 +260,7 @@ class UserCollectionWorksHandler(base.APIBaseHandler):
     @base.db_success_or_500
     def create_collection_work(self, collection, form):
         work = form.work.data
-        collection.works.append(work)
+        collection.images.append(work)
         self.session.flush()
 
         return work

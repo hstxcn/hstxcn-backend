@@ -115,6 +115,7 @@ class RegisterHandler(base.APIBaseHandler, MailMixin):
 
         cover = self.create_collection()
         user.cover_collection = cover
+        user.collections.append(cover)
 
         return user
 

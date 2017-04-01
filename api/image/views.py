@@ -38,17 +38,18 @@ class ImageUploadHandler(base.APIBaseHandler):
     @gen.coroutine
     def post(self):
         file = self.save_image(self.image_data)
-        author = util.generate_cos_signature()
+        image = models.Image.query.filter_by(filename=file['name']).first()
 
-        comp_file = self.compress_file(file)
-        crop_file = self.crop_file(comp_file)
-        yield self.upload_image(comp_file, author)
-        yield self.upload_image(crop_file, author)
-        yield self.upload_image(file, author)
-        try:
+        if not image:
+            author = util.generate_cos_signature()
+            comp_file = self.compress_file(file)
+            crop_file = self.crop_file(comp_file)
+            yield self.upload_image(comp_file, author)
+            yield self.upload_image(crop_file, author)
+            yield self.upload_image(file, author)
             image = self.create_image(file['name'])
-        except IntegrityError:
-            image = models.Image.query.filter_by(filename=file['name']).first()
+        else:
+            file['file'].close()
         self.set_status(201)
         self.finish(
             json.dumps(
