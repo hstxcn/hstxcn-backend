@@ -152,6 +152,9 @@ class UserCollectionHandler(base.APIBaseHandler):
 
     @base.db_success_or_500
     def delete_collection(self, collection):
+        self.current_user.collections.remove(collection)
+        for i in collection.images:
+            collection.images.remove(i)
         self.session.delete(collection)
 
     @staticmethod

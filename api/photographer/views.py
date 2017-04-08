@@ -108,7 +108,7 @@ class PhotographerOptionHandler(base.APIBaseHandler):
 
         response = {
             "styles": [style.format_detail() for style in styles],
-            "schools": [school.format_detail() for school in schools],
+            "school": [school.format_detail() for school in schools],
             "categories": [category.format_detail() for category in categories],
             "themes": [theme.format_detail() for theme in themes]
         }

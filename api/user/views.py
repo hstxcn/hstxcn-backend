@@ -40,7 +40,7 @@ class MailMixin():
         yield s.connect(mail_settings['host'], mail_settings['port'])
         yield s.starttls()
         yield s.login(mail_settings['email'], mail_settings['password'])
-
+        
         me = mail_settings['email']
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "【友拍平台】摄影师注册确认"
