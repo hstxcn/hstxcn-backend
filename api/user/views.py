@@ -228,7 +228,7 @@ class ProfileHandler(base.APIBaseHandler):
         self.set_status(200)
         self.finish()
 
-    @base.db_success_or_500
+    @base.db_success_or_pass
     def edit_profile(self, form):
         attr_list = ['name', 'sex', 'description',
                      'major', 'imagelink']
@@ -243,6 +243,7 @@ class ProfileHandler(base.APIBaseHandler):
         if form.tags.data:
             for o in self.current_user.tags:
                 self.current_user.tags.remove(o)
+                self.session.delete(o)
             for d in form.tags.data:
                 self.current_user.tags.append(d)
         if form.styles.data:
