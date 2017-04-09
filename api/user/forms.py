@@ -93,13 +93,11 @@ class ProfileForm(Form):
             return
         tags = list()
         for text in list(field.data):
-            d = current_user.tags.filter_by(text=text).first()
-            if d is None:
-                nd = models.Tag(
-                    user=current_user,
-                    text=text
-                )
-                tags.append(nd)
+            nd = models.Tag(
+                user=current_user,
+                text=text
+            )
+            tags.append(nd)
         field.data = tags
 
     def validate_sex(form, field):

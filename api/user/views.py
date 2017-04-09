@@ -116,6 +116,7 @@ class RegisterHandler(base.APIBaseHandler, MailMixin):
         cover = self.create_collection()
         user.cover_collection = cover
         user.collections.append(cover)
+        self.session.add(user)
 
         return user
 
@@ -256,10 +257,12 @@ class ProfileHandler(base.APIBaseHandler):
                 self.current_user.categories.remove(o)
             for c in form.categories.data:
                 self.current_user.categories.append(c)
+        self.session.add(self.current_user)
 
     @base.db_success_or_500
     def submit_profile(self):
         self.current_user.status = "reviewing"
+        self.session.add(self.current_user)
 
 
 class UserQueryHandler(base.APIBaseHandler):
