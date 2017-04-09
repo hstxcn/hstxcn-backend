@@ -241,12 +241,18 @@ class ProfileHandler(base.APIBaseHandler):
         if form.school.data:
             self.current_user.school = form.school.data
         if form.tags.data:
+            for o in self.current_user.tags:
+                self.current_user.tags.remove(o)
             for d in form.tags.data:
                 self.current_user.tags.append(d)
         if form.styles.data:
+            for o in self.current_user.styles:
+                self.current_user.styles.remove(o)
             for s in form.styles.data:
                 self.current_user.styles.append(s)
         if form.categories.data:
+            for o in self.current_user.categories:
+                self.current_user.categories.remove(o)
             for c in form.categories.data:
                 self.current_user.categories.append(c)
 
