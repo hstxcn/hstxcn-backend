@@ -228,7 +228,7 @@ class UserCollectionWorkHandler(base.APIBaseHandler):
     def delete(self, col_id, work_id):
         collection = self.get_or_404(self.current_user.collections,
                                      id=col_id)
-        work = self.get_or_404(self.current_user.collections,
+        work = self.get_or_404(collection.images,
                                id=work_id)
         self.delete_work(work, collection)
         self.set_status(204)
