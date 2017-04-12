@@ -200,7 +200,8 @@ class UserCollectionsHandler(base.APIBaseHandler):
                                        photoshop=form.photoshop.data,
                                        filming_time=form.filming_time.data)
         for image in form.images.data:
-            collection.images.append(image)
+            if image not in collection.images:
+                collection.images.append(image)
         collection.user = self.current_user
 
         self.session.add(collection)
@@ -263,7 +264,8 @@ class UserCollectionWorksHandler(base.APIBaseHandler):
     @base.db_success_or_500
     def create_collection_work(self, collection, form):
         work = form.work.data
-        collection.images.append(work)
+        if work not in collection.images:
+            collection.images.append(work)
         self.session.flush()
 
         return work

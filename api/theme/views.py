@@ -98,7 +98,8 @@ class ThemesHandler(base.APIBaseHandler):
         )
         if form.collections.data:
             for collection in form.collections.data:
-                theme.collections.append(collection)
+                if collection not in theme.collections:
+                    theme.collections.append(collection)
         self.session.add(theme)
 
         return theme
@@ -169,8 +170,11 @@ class ThemeCollectionsHandler(base.APIBaseHandler):
 
     @base.db_success_or_500
     def add_theme_collection(self, theme, collection):
-        theme.collections.append(collection)
-        collection.user.themes.append(theme)
+        if collection not in theme.collections:
+            theme.collections.append(collection)
+
+        if theme not in collection.user.themes:
+            collection.user.themes.append(theme)
 
 
 class ThemeCollectionsCountHandler(base.APIBaseHandler):

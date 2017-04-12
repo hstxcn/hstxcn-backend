@@ -60,13 +60,14 @@ class ImageUploadHandler(base.APIBaseHandler):
             )
         )
 
-    @base.db_success_or_pass
+    @base.db_success_or_500
     def create_image(self, filename):
         image = models.Image(
             filename=filename,
             user=self.current_user
         )
-        self.current_user.images.append(image)
+        if image not in self.current_user.images:
+            self.current_user.images.append(image)
         self.session.add(image)
 
         return image
