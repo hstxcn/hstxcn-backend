@@ -32,12 +32,15 @@ class ImageUploadHandler(base.APIBaseHandler):
             try:
                 self.image_data = self.request.files['image']
             except Exception as e:
-                raise base.JSONHTTPError(415) from e
+                raise base.JSONHTTPError(400) from e
 
     @base.authenticated(status=("confirmed", "reviewed",))
     @gen.coroutine
     def post(self):
-        file = self.save_image(self.image_data)
+        try:
+            file = self.save_image(self.image_data)
+        except Exception as e:
+            raise base.JSONHTTPError(415) from e
         image = models.Image.query.filter_by(filename=file['name']).first()
 
         if not image:
