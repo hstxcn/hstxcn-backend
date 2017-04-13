@@ -95,7 +95,7 @@ class RegisterHandler(base.APIBaseHandler, MailMixin):
         else:
             self.validation_error(form)
 
-    @base.db_success_or_pass
+    @base.db_success_or_500
     def create_user(self, form):
         avatar_num = random.randint(1, 3)
         avatar_name = "avatar{}.png".format(avatar_num)
