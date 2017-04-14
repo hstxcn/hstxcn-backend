@@ -196,7 +196,7 @@ class ProfileHandler(base.APIBaseHandler):
     URL: /profile
     Allowed methods: GET, PATCH, PUT
     """
-    @base.authenticated(status=("confirmed", "reviewing", "reviewed",))
+    @base.authenticated()
     def get(self):
         """
         Check your profile.
