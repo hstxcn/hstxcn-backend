@@ -194,7 +194,7 @@ class LoginHandler(base.APIBaseHandler):
 class ProfileHandler(base.APIBaseHandler):
     """
     URL: /profile
-    Allowed methods: GET, PATCH, PUT
+    Allowed methods: GET, PATCH, PUT, DELETE
     """
     @base.authenticated()
     def get(self):
@@ -222,10 +222,16 @@ class ProfileHandler(base.APIBaseHandler):
         else:
             self.validation_error(form)
 
-    @base.authenticated(status=("confirmed", "reviewed",))
+    @base.authenticated(status=("confirmed",))
     def put(self):
         self.submit_profile()
-        self.set_status(200)
+        self.set_status(201)
+        self.finish()
+
+    @base.authenticated(status=("reviewing",))
+    def delete(self):
+        self.cancel_submit_profile()
+        self.set_status(201)
         self.finish()
 
     @base.db_success_or_pass
@@ -261,6 +267,11 @@ class ProfileHandler(base.APIBaseHandler):
     @base.db_success_or_500
     def submit_profile(self):
         self.current_user.status = "reviewing"
+        self.session.add(self.current_user)
+
+    @base.db_success_or_500
+    def cancel_submit_profile(self):
+        self.current_user.status = "confirmed"
         self.session.add(self.current_user)
 
 
