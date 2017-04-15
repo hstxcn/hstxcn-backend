@@ -163,6 +163,7 @@ class ResendConfirmationHandler(base.APIBaseHandler, MailMixin):
     Allowed methods: POST
     """
     @base.authenticated(status=("unconfirmed",))
+    @gen.coroutine
     def post(self, uuid):
         user = self.get_or_404(models.User.query,
                                uuid)
