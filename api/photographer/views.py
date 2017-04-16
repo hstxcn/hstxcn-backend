@@ -34,15 +34,18 @@ class PhotographersHandler(base.APIBaseHandler):
     Allowed methods: GET
     """
     def get(self):
-        form = forms.PhotographersForm(self.request.arguments,
+        args = dict()
+        for key, value in self.request.arguments.items():
+            args[key] = [value]
+        form = forms.PhotographersForm(args,
                                        locale_code=self.locale.code)
         if form.validate():
             query = models.User.query\
                 .filter_by(is_admin=False, status='reviewed')\
-                .filter(or_(s in models.User.styles for s in form.styles.data))\
+                .filter(or_(models.User.styles.contains(s) for s in form.styles.data))\
                 .filter(or_(models.User.school == s for s in form.schools.data))\
-                .filter(or_(c in models.User.categories for c in form.categories.data))\
-                .filter(or_(t in models.User.themes for t in form.themes.data))
+                .filter(or_(models.User.categories.contains(c) for c in form.categories.data))\
+                .filter(or_(models.User.themes.contains(t) for t in form.themes.data))
 
             objects_query = self.apply_order(query, form)
             objects = objects_query.all()
