@@ -32,16 +32,16 @@ class PhotographersForm(Form, baseForms.SliceMixin):
         ("asc", "asc"),
         ("desc", "desc"),
     ])
-    styles = Field('style', default=[], validators=[
+    styles = Field('styles', default=[], validators=[
         baseValidators.styles_get
     ])
-    themes = Field('theme', default=[], validators=[
+    themes = Field('themes', default=[], validators=[
         baseValidators.themes_get
     ])
-    schools = Field('school', default=[], validators=[
+    schools = Field('schools', default=[], validators=[
         baseValidators.schools_get
     ])
-    categories = Field('category', default=[], validators=[
+    categories = Field('categories', default=[], validators=[
         baseValidators.categories_get
     ])
 

@@ -36,7 +36,8 @@ class PhotographersHandler(base.APIBaseHandler):
     def get(self):
         args = dict()
         for key, value in self.request.arguments.items():
-            args[key] = [value]
+            if key in ('schools', 'themes', 'styles', 'categories'):
+                args[key] = [value]
         form = forms.PhotographersForm(args,
                                        locale_code=self.locale.code)
         if form.validate():
