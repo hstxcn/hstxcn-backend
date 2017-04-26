@@ -283,11 +283,11 @@ class UserQueryHandler(base.APIBaseHandler):
     """
     @base.authenticated(admin=True)
     def get(self):
-        form = forms.UserQueryForm(self.json_args,
+        form = forms.UserQueryForm(self.request.arguments,
                                    locale_code=self.locale.code)
         if form.validate():
             users = models.User.query\
-                .filter(models.User.status in form.status.data)\
+                .filter(models.User.status == form.status.data)\
                 .all()
             self.finish(json.dumps(
                 [user.format_detail(get_email=True) for user in users]
