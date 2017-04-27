@@ -153,7 +153,7 @@ class User(Base):
         else:
             self.number = number
 
-    def format_detail(self, get_email=False):
+    def format_detail(self, get_email=False, get_collections=False):
         detail = {
             'id': self.id.hex,
             'name': self.name,
@@ -165,26 +165,30 @@ class User(Base):
             'description': self.description,
             'tags': [d.format_detail() for d in self.tags],
             'styles': [s.format_detail() for s in self.styles],
-            'categories': [c.format_detail() for c in self.categories]
+            'categories': [c.format_detail() for c in self.categories],
+            'status': self.status
         }
 
         if get_email:
             detail['email'] = self.email
-        if self.status != "reviewed":
-            detail['status'] = self.status
+        if get_collections:
+            detail['collections'] = [c.format_detail(get_photographer=False) for c in self.collections]
+            detail['cover'] = self.cover_collection.format_detail(get_photographer=False)
+        else:
+            if self.cover_collection:
+                detail['collection'] = self.cover_collection.format_detail(get_photographer=False)
+            else:
+                hottest_collection = self.collections.order_by("likes desc").first()
+                detail['collection'] = hottest_collection.format_detail(get_photographer=False) \
+                    if hottest_collection else None
+
         if self.is_admin:
             detail['status'] = "admin"
         if self.avatar:
             detail['avatar'] = self.avatar.format_detail()
         if self.school:
             detail['school'] = self.school.format_detail()
-        if self.cover_collection:
-            detail['collection'] = self.cover_collection.format_detail(get_photographer=False)
-        else:
-            hottest_collection = self.collections.order_by("likes desc").first()
-            detail['collection'] = hottest_collection.format_detail(get_photographer=False) \
-                if hottest_collection else None
-
+                
         return detail
 
 

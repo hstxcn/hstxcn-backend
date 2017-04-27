@@ -197,13 +197,13 @@ class ProfileHandler(base.APIBaseHandler):
     URL: /profile
     Allowed methods: GET, PATCH, PUT, DELETE
     """
-    @base.authenticated()
+    @base.authenticated(status=("unconfirmed", "confirmed", "reviewing", "reviewed", ))
     def get(self):
         """
         Check your profile.
         """
         self.finish(json.dumps(
-            self.current_user.format_detail(get_email=True)
+            self.current_user.format_detail(get_email=True, get_collections=True)
         ))
 
     @base.authenticated(status=("confirmed", "reviewed",))
@@ -218,7 +218,7 @@ class ProfileHandler(base.APIBaseHandler):
             self.edit_profile(form)
 
             self.finish(json.dumps(
-                self.current_user.format_detail()
+                self.current_user.format_detail(get_email=True, get_collections=True)
             ))
         else:
             self.validation_error(form)
@@ -290,7 +290,7 @@ class UserQueryHandler(base.APIBaseHandler):
                 .filter(models.User.status == form.status.data)\
                 .all()
             self.finish(json.dumps(
-                [user.format_detail(get_email=True) for user in users]
+                [user.format_detail(get_email=True, get_collections=True) for user in users]
             ))
         else:
             self.validation_error(form)
@@ -310,7 +310,7 @@ class ActivateHandler(base.APIBaseHandler):
             user = yield self.activate_user(user)
 
             self.finish(json.dumps(
-                user.format_detail()
+                user.format_detail(get_email=True, get_collections=True)
             ))
         else:
             self.validation_error(form)
