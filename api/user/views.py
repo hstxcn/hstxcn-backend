@@ -357,7 +357,7 @@ class ActivateHandler(base.APIBaseHandler):
         yield s.starttls()
         yield s.login(mail_settings['email'], mail_settings['password'])
 
-        me = mail_settings['host']
+        me = mail_settings['email']
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subjects[is_activate]
         msg['From'] = me
