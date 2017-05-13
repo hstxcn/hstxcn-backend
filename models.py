@@ -173,7 +173,8 @@ class User(Base):
             detail['email'] = self.email
         if get_collections:
             detail['collections'] = [c.format_detail(get_photographer=False) for c in self.collections]
-            detail['cover'] = self.cover_collection.format_detail(get_photographer=False)
+            if self.cover_collection:
+                detail['cover'] = self.cover_collection.format_detail(get_photographer=False)
         else:
             if self.cover_collection:
                 detail['collection'] = self.cover_collection.format_detail(get_photographer=False)
