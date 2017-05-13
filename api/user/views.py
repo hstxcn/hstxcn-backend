@@ -283,7 +283,10 @@ class UserQueryHandler(base.APIBaseHandler):
     """
     @base.authenticated(admin=True)
     def get(self):
-        form = forms.UserQueryForm(self.request.arguments,
+        args = dict()
+        for key, value in self.request.arguments:
+            args[key] = [value]
+        form = forms.UserQueryForm(args,
                                    locale_code=self.locale.code)
         if form.validate():
             users = models.User.query\
