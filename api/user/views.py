@@ -319,6 +319,7 @@ class ActivateHandler(base.APIBaseHandler):
         else:
             self.validation_error(form)
 
+    @base.authenticated(admin=True)
     @gen.coroutine
     def delete(self):
         form = forms.ActivateForm(self.json_args,
