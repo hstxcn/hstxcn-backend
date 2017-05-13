@@ -155,9 +155,4 @@ class ActivateForm(Form):
 
 
 class UserQueryForm(Form):
-    status = SelectField('status', default="reviewed", choices=[
-        ("unconfirmed", "unconfirmed"),
-        ("confirmed", "confirmed"),
-        ("reviewing", "reviewing"),
-        ("reviewed", "reviewed")
-    ])
+    status = Field('status', default=[])

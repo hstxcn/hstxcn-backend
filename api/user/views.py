@@ -291,7 +291,7 @@ class UserQueryHandler(base.APIBaseHandler):
                                    locale_code=self.locale.code)
         if form.validate():
             users = models.User.query\
-                .filter(models.User.status == form.status.data)\
+                .filter(or_(models.User.status == s for s in form.status.data))\
                 .all()
             self.finish(json.dumps(
                 [user.format_detail(get_email=True, get_collections=True) for user in users]
