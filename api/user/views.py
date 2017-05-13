@@ -284,7 +284,8 @@ class UserQueryHandler(base.APIBaseHandler):
     @base.authenticated(admin=True)
     def get(self):
         args = dict()
-        for key, value in self.request.arguments:
+        print(self.request.arguments)
+        for key, value in self.request.arguments.items():
             args[key] = [value]
         form = forms.UserQueryForm(args,
                                    locale_code=self.locale.code)
@@ -318,6 +319,7 @@ class ActivateHandler(base.APIBaseHandler):
         else:
             self.validation_error(form)
 
+    @gen.coroutine
     def delete(self):
         form = forms.ActivateForm(self.json_args,
                                   locale_code=self.locale.code)
