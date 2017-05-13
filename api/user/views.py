@@ -336,19 +336,19 @@ class ActivateHandler(base.APIBaseHandler):
     @base.db_success_or_500
     @gen.coroutine
     def activate_user(self, user):
-        yield self.send_activate_mail(user)
         user.status = "reviewed"
         self.session.add(user)
         self.session.flush()
+        yield self.send_activate_mail(user)
         return user
 
     @base.db_success_or_500
     @gen.coroutine
     def unactivate_user(self, user):
-        yield self.send_activate_mail(user, False)
         user.status = "confirmed"
         self.session.add(user)
         self.session.flush()
+        yield self.send_activate_mail(user, False)
         return user
 
     @gen.coroutine
