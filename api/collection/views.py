@@ -59,11 +59,8 @@ class CollectionLikeHandler(base.APIBaseHandler):
     Allowed methods: GET, DELETE
     """
     def get(self, uuid):
-        if user.cover_collection.id.hex == uuid:
-            collection = user.cover_collection 
-        else:
-            collection = self.get_or_404(self.current_user.collections,
-                                         id=uuid)
+        collection = self.get_or_404(models.Collection.query,
+                                     uuid)
         ip = self.request.remote_ip
         if not self.redis_cli.sismember(collection.id.hex, ip):
             self.redis_cli.sadd(collection.id.hex, ip)
@@ -74,11 +71,6 @@ class CollectionLikeHandler(base.APIBaseHandler):
         self.finish()
 
     def delete(self, uuid):
-        if user.cover_collection.id.hex == uuid:
-            collection = user.cover_collection 
-        else:
-            collection = self.get_or_404(self.current_user.collections,
-                                         id=uuid)
         collection = self.get_or_404(models.Collection.query,
                                      uuid)
         ip = self.request.remote_ip
@@ -129,8 +121,8 @@ class UserCollectionHandler(base.APIBaseHandler):
 
     @base.authenticated(status=("confirmed", "reviewed",))
     def patch(self, uuid):
-        if user.cover_collection.id.hex == uuid:
-            collection = user.cover_collection 
+        if self.current_user.cover_collection.id.hex == uuid:
+            collection = self.current_user.cover_collection 
         else:
             collection = self.get_or_404(self.current_user.collections,
                                          id=uuid)
@@ -228,8 +220,8 @@ class UserCollectionWorkHandler(base.APIBaseHandler):
 
     @base.authenticated()
     def get(self, col_id, work_id):
-        if user.cover_collection.id.hex == col_id:
-            collection = user.cover_collection 
+        if self.current_user.cover_collection.id.hex == col_id:
+            collection = self.current_user.cover_collection 
         else:
             collection = self.get_or_404(self.current_user.collections,
                                          id=col_id)
@@ -241,8 +233,8 @@ class UserCollectionWorkHandler(base.APIBaseHandler):
 
     @base.authenticated(status=("confirmed", "reviewed",))
     def delete(self, col_id, work_id):
-        if user.cover_collection.id.hex == col_id:
-            collection = user.cover_collection 
+        if self.current_user.cover_collection.id.hex == col_id:
+            collection = self.current_user.cover_collection 
         else:
             collection = self.get_or_404(self.current_user.collections,
                                          id=col_id)
@@ -265,8 +257,8 @@ class UserCollectionWorksHandler(base.APIBaseHandler):
     """
     @base.authenticated(status=("confirmed", "reviewed",))
     def post(self, col_id):
-        if user.cover_collection.id.hex == col_id:
-            collection = user.cover_collection 
+        if self.current_user.cover_collection.id.hex == col_id:
+            collection = self.current_user.cover_collection 
         else:
             collection = self.get_or_404(self.current_user.collections,
                                          id=col_id)
